@@ -15,7 +15,7 @@
 	<name>Scheduled Check-in Service</name>
 	<description>A simple services that calls a heartbeat services at a scheduled interval</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>8</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
