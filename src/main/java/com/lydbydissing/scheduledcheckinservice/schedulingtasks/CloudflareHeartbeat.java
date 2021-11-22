@@ -18,7 +18,6 @@ package com.lydbydissing.scheduledcheckinservice.schedulingtasks;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.json.JSONObject;
@@ -40,13 +39,19 @@ import com.lydbydissing.scheduledcheckinservice.heartbeats.Heartbeat;
 public class CloudflareHeartbeat {
 
 	private static final Logger log = LoggerFactory.getLogger(CloudflareHeartbeat.class);
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+//	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	
 	private HttpHeaders headers = new HttpHeaders();
 	private JSONObject heartbeatJsonObject = new JSONObject();
-
+	
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+//		ClientHttpRequestInterceptor interceptor = (request, body, execution) -> {
+//            request.getHeaders().add("user-agent", "Application");
+//            return execution.execute(request, body);
+//        };
+//        
+//        return restTemplateBuilder.additionalInterceptors(interceptor).build();
 		return builder.build();
 	}
 	
@@ -54,16 +59,16 @@ public class CloudflareHeartbeat {
 	@Scheduled(fixedRate = 60000)
 	public void reportCurrentTime() throws URISyntaxException {
 		log.info("Producing heartbeat now. Local time: {}", new Date());
-//		String urlFromSystem = System.getProperty("HEARTBEAT_URI");
-//		log.info("We should call this url {}", urlFromSystem);
-		
+
 		RestTemplate restTemplate = new RestTemplate();
 
-		Heartbeat heartbeat = new Heartbeat(new URI(System.getProperty("HEARTBEAT_URI")));
+		Heartbeat heartbeat = new Heartbeat(new URI(System.getProperty("HEARTBEAT_URI")), 
+											System.getProperty("HEARTBEAT_LOCATION"));
 		headers.setContentType(MediaType.APPLICATION_JSON);
 	    heartbeatJsonObject.put("location", heartbeat.getLocation());
 	    heartbeatJsonObject.put("local date", heartbeat.getLocalDate());
-	    
+
+	    headers.add("user-agent", "Application");
 	    HttpEntity<String> request = new HttpEntity<String>(heartbeatJsonObject.toString(), headers);
 	    String heartbeatResultAsJsonStr = restTemplate.postForObject(heartbeat.getUri(), request, String.class);
 	    log.info("Heartbeat response: {}", heartbeatResultAsJsonStr);

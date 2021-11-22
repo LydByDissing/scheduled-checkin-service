@@ -1,9 +1,10 @@
-FROM maven:3-jdk-11-slim AS build
+FROM maven:3-jdk-8-slim AS build
 
-COPY . /usr/src/mymaven
+WORKDIR /usr/src/mymaven
+COPY . .
 RUN mvn package
 
-FROM openjdk:11-jre-slim-alpine
+FROM openjdk:8-jre-slim
 COPY --from=build /usr/src/mymaven/target/scheduled-checkin-service-0.0.1-SNAPSHOT.jar /bin/scheduled-checkin-service.jar
 
 COPY docker-entrypoint.sh /

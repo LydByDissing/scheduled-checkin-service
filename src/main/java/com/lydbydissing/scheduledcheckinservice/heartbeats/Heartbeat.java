@@ -13,12 +13,12 @@ public class Heartbeat {
 	private Date localDate;
 	private URI uri;
 	
-	public Heartbeat(URI uri) throws URISyntaxException {
+	public Heartbeat(URI uri, String location) throws URISyntaxException {
 		// configure URL
 		this.uri = uri;
 		
 		//configure location
-		this.location = "Nørrestrand 18";
+		this.location = location;
 		
 		//set epoch
 		this.localDate = new Date();
