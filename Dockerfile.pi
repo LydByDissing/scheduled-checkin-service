@@ -1,0 +1,6 @@
+FROM balenalib/raspberry-pi-openjdk:8-stretch
+COPY *.jar /bin/scheduled-checkin-service.jar
+
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
