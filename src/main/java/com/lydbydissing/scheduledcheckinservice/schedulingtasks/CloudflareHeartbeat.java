@@ -46,12 +46,10 @@ public class CloudflareHeartbeat {
 	
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-//		ClientHttpRequestInterceptor interceptor = (request, body, execution) -> {
-//            request.getHeaders().add("user-agent", "Application");
-//            return execution.execute(request, body);
-//        };
-//        
-//        return restTemplateBuilder.additionalInterceptors(interceptor).build();
+
+	    // add the header only once
+		this.headers.add("user-agent", "Application");
+	    
 		return builder.build();
 	}
 	
@@ -64,11 +62,10 @@ public class CloudflareHeartbeat {
 
 		Heartbeat heartbeat = new Heartbeat(new URI(System.getProperty("HEARTBEAT_URI")), 
 											System.getProperty("HEARTBEAT_LOCATION"));
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		this.headers.setContentType(MediaType.APPLICATION_JSON);
 	    heartbeatJsonObject.put("location", heartbeat.getLocation());
 	    heartbeatJsonObject.put("local date", heartbeat.getLocalDate());
 
-	    headers.add("user-agent", "Application");
 	    HttpEntity<String> request = new HttpEntity<String>(heartbeatJsonObject.toString(), headers);
 	    String heartbeatResultAsJsonStr = restTemplate.postForObject(heartbeat.getUri(), request, String.class);
 	    log.info("Heartbeat response: {}", heartbeatResultAsJsonStr);
